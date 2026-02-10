@@ -1,6 +1,4 @@
-use std::sync::mpsc;
-
-use crate::{comm::run_mqtt_client, ui::ShowtimeApp};
+use crate::ui::MainWrapper;
 
 pub mod esp {
     include!(concat!(env!("OUT_DIR"), "/esp_status.rs"));
@@ -10,18 +8,12 @@ mod comm;
 mod common;
 mod ui;
 
-fn main() -> eframe::Result<()> {
-    let (tx, rx) = mpsc::channel();
-
-    std::thread::spawn(move || {
-        let rt = tokio::runtime::Runtime::new().unwrap();
-        rt.block_on(run_mqtt_client(tx));
-    });
-
+#[tokio::main]
+async fn main() -> eframe::Result<()> {
     let native_options = eframe::NativeOptions::default();
     eframe::run_native(
-        "Showtime Desktop",
+        "Showtime Desktop by Mathis Burger",
         native_options,
-        Box::new(|cc| Box::new(ShowtimeApp::new(cc, rx))),
+        Box::new(|_cc| Box::new(MainWrapper::new())),
     )
 }

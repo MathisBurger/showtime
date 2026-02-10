@@ -1,64 +1,47 @@
-use crate::comm::dto::EspDevice;
-use eframe::Frame;
 use eframe::egui;
-use eframe::egui::Context;
-use std::sync::mpsc::Receiver;
-use std::time::Duration;
+
+use crate::ui::{setup::render_setup, showtime::ShowtimeApp};
 
 mod device_card;
+mod setup;
+mod showtime;
 
-pub struct ShowtimeApp {
-    rx: Receiver<Vec<EspDevice>>,
-    devices: Vec<EspDevice>,
+pub enum AppState {
+    Setup { host: String, port: String },
+    Running(ShowtimeApp),
 }
 
-impl ShowtimeApp {
-    pub fn new(cc: &eframe::CreationContext<'_>, rx: Receiver<Vec<EspDevice>>) -> Self {
+pub struct MainWrapper {
+    state: AppState,
+}
+
+impl MainWrapper {
+    pub fn new() -> Self {
         Self {
-            rx,
-            devices: Vec::new(),
+            state: AppState::Setup {
+                host: "localhost".to_string(),
+                port: "1883".to_string(),
+            },
         }
     }
 }
 
-impl eframe::App for ShowtimeApp {
-    fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
-        while let Ok(new_devices) = self.rx.try_recv() {
-            self.devices = new_devices;
-            self.devices.sort_by_key(|dev| dev.ip_addr.clone());
-        }
+impl eframe::App for MainWrapper {
+    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+        let mut connection_rx = None;
 
-        eframe::egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("🎬 Showtime: LED Status Monitor");
-            ui.add_space(10.0);
-
-            eframe::egui::ScrollArea::vertical()
-                .auto_shrink([false; 2])
-                .show(ui, |ui| {
-                    let available_width = ui.available_width();
-                    let card_width = 320.0;
-                    let spacing = 12.0;
-                    let num_columns =
-                        (available_width / (card_width + spacing)).max(1.0).floor() as usize;
-
-                    egui::Grid::new("device_grid")
-                        .num_columns(num_columns)
-                        .spacing([spacing, spacing])
-                        .show(ui, |ui| {
-                            for (i, device) in self.devices.iter().enumerate() {
-                                ui.vertical(|ui| {
-                                    ui.set_width(card_width);
-                                    ui.push_id(&device.ip_addr, |ui| {
-                                        device.draw_device_card(ui);
-                                    });
-                                });
-                                if (i + 1) % num_columns == 0 {
-                                    ui.end_row();
-                                }
-                            }
-                        });
+        match &mut self.state {
+            AppState::Setup { host, port } => {
+                render_setup(ctx, host, port, |rx| {
+                    connection_rx = Some(rx);
                 });
-        });
-        ctx.request_repaint_after(Duration::from_millis(100));
+            }
+            AppState::Running(app) => {
+                app.update(ctx, frame);
+            }
+        }
+        if let Some(rx) = connection_rx {
+            self.state = AppState::Running(ShowtimeApp::new(rx));
+        }
     }
 }

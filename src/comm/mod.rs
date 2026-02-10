@@ -3,12 +3,12 @@ pub mod dto;
 use std::{collections::HashMap, sync::mpsc::Sender, time::Duration};
 
 use prost::Message;
-use rumqttc::{AsyncClient, Event, EventLoop, MqttOptions, Packet, QoS};
+use rumqttc::{AsyncClient, Event, MqttOptions, Packet, QoS};
 
 use crate::{comm::dto::EspDevice, esp::EspStatusMessage};
 
-pub async fn run_mqtt_client(tx: Sender<Vec<EspDevice>>) {
-    let mut mqttoptions = MqttOptions::new("showtime_desktop", "localhost", 1883);
+pub async fn run_mqtt_client(tx: Sender<Vec<EspDevice>>, host: String, port: u16) {
+    let mut mqttoptions = MqttOptions::new("showtime_desktop", host, port);
     mqttoptions.set_keep_alive(Duration::from_secs(5));
 
     let (client, mut eventloop) = AsyncClient::new(mqttoptions, 10);
