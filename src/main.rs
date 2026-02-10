@@ -14,6 +14,6 @@ async fn main() -> eframe::Result<()> {
     eframe::run_native(
         "Showtime Desktop by Mathis Burger",
         native_options,
-        Box::new(|_cc| Box::new(MainWrapper::new())),
+        Box::new(|_cc| Ok(Box::new(MainWrapper::new()))),
     )
 }
