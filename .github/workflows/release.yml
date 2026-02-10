@@ -1,0 +1,22 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: cargo build --release
+      - name: Upload Artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            target/release/showtime.exe
+            target/release/showtime
