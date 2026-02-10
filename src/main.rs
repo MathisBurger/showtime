@@ -7,6 +7,7 @@ pub mod esp {
 }
 
 mod comm;
+mod common;
 mod ui;
 
 fn main() -> eframe::Result<()> {

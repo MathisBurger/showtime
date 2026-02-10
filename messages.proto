@@ -9,4 +9,5 @@ message EspStatusMessage {
   uint32 last_sacn_pkt = 4;
   string device_name = 5;
   uint32 signal_strength = 6;
+  string ip_addr = 7;
 }
