@@ -1,12 +1,13 @@
 use std::sync::mpsc::Receiver;
 
 use eframe::egui;
+use rumqttc::AsyncClient;
 
 use crate::comm::{dto::EspDevice, run_mqtt_client};
 
 pub fn render_setup<F>(ctx: &egui::Context, host: &mut String, port: &mut String, finish: F)
 where
-    F: FnOnce(Receiver<Vec<EspDevice>>),
+    F: FnOnce(Receiver<Vec<EspDevice>>, AsyncClient),
 {
     egui::CentralPanel::default().show(ctx, |ui| {
         ui.vertical_centered(|ui| {
@@ -28,11 +29,17 @@ where
                     let host_clone = host.clone();
                     let port_val = port.parse::<u16>().unwrap_or(1883);
 
+                    let (client_tx, client_rx) = std::sync::mpsc::channel();
+
                     tokio::spawn(async move {
-                        run_mqtt_client(tx, host_clone, port_val).await;
+                        let client = run_mqtt_client(tx, host_clone, port_val).await;
+                        let _ = client_tx.send(client);
                     });
 
-                    finish(rx);
+                    // Warte auf den Client (blockierend, aber nur kurz)
+                    if let Ok(client) = client_rx.recv() {
+                        finish(rx, client);
+                    }
                 }
             });
         });

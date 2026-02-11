@@ -1,6 +1,10 @@
 use eframe::egui;
+use prost::Message;
+use rumqttc::AsyncClient;
+use rumqttc::QoS;
 
 use crate::comm::dto::EspDevice;
+use crate::esp::UpdateConfig;
 
 pub struct ConfigWindow {
     pub device: EspDevice,
@@ -21,7 +25,7 @@ impl ConfigWindow {
         }
     }
 
-    pub fn render<F>(&mut self, ctx: &egui::Context, go_back: F)
+    pub fn render<F>(&mut self, ctx: &egui::Context, mqtt_client: Option<AsyncClient>, go_back: F)
     where
         F: FnOnce(),
     {
@@ -46,6 +50,23 @@ impl ConfigWindow {
                     ui.add_space(10.0);
 
                     if ui.button("Update").clicked() {
+                        if let Some(_client) = mqtt_client {
+                            let config_msg = UpdateConfig {
+                                mac_addr: self.device.mac_addr.clone(),
+                                device_name: self.name.clone(),
+                                dmx_universe: self.dmx_universe.parse::<u32>().unwrap(),
+                                dmx_lower_addr: self.dmx_lower_addr.parse::<u32>().unwrap(),
+                                dmx_upper_addr: self.dmx_upper_addr.parse::<u32>().unwrap(),
+                            };
+                            let payload = config_msg.encode_to_vec();
+
+                            let _ = _client.publish(
+                                "showtime/set_config",
+                                QoS::AtMostOnce,
+                                true,
+                                payload,
+                            );
+                        }
                         go_back();
                     }
                 });

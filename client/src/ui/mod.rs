@@ -1,6 +1,7 @@
 use std::sync::mpsc::{Receiver, Sender};
 
 use eframe::egui;
+use rumqttc::AsyncClient;
 
 use crate::{
     comm::dto::EspDevice,
@@ -13,7 +14,7 @@ mod setup;
 mod showtime;
 
 pub enum AppEvent {
-    StartStreaming(Receiver<Vec<EspDevice>>),
+    StartStreaming(Receiver<Vec<EspDevice>>, AsyncClient),
     EditDevice(EspDevice),
     BackToMain,
 }
@@ -28,7 +29,8 @@ pub struct MainWrapper {
     state: AppState,
     event_tx: Sender<AppEvent>,
     event_rx: Receiver<AppEvent>,
-    mqtt: Option<Receiver<Vec<EspDevice>>>,
+    device_rx: Option<Receiver<Vec<EspDevice>>>,
+    mqtt_client: Option<AsyncClient>,
 }
 
 impl MainWrapper {
@@ -41,7 +43,8 @@ impl MainWrapper {
             },
             event_rx: rx,
             event_tx: tx,
-            mqtt: None,
+            device_rx: None,
+            mqtt_client: None,
         }
     }
 }
@@ -50,7 +53,9 @@ impl eframe::App for MainWrapper {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
         while let Ok(event) = self.event_rx.try_recv() {
             match event {
-                AppEvent::StartStreaming(rx) => {
+                AppEvent::StartStreaming(rx, client) => {
+                    // The receiver is passed directly to ShowtimeApp and not stored in MainWrapper.
+                    self.mqtt_client = Some(client);
                     self.state = AppState::Running(ShowtimeApp::new(rx, self.event_tx.clone()));
                 }
                 AppEvent::EditDevice(dev) => {
@@ -60,15 +65,17 @@ impl eframe::App for MainWrapper {
                         &mut self.state,
                         AppState::SetConfig(config_window),
                     ) {
-                        self.mqtt = Some(app.rx);
+                        self.device_rx = Some(app.rx);
                     } else {
                         self.state = AppState::SetConfig(ConfigWindow::new(dev));
                     }
                 }
                 AppEvent::BackToMain => {
-                    if let Some(rx) = self.mqtt.take() {
+                    // Zurück zum Running-State, falls MQTT-Verbindung existiert
+                    if let Some(rx) = self.device_rx.take() {
                         self.state = AppState::Running(ShowtimeApp::new(rx, self.event_tx.clone()));
                     } else {
+                        // Fallback zum Setup, falls keine MQTT-Verbindung
                         self.state = AppState::Setup {
                             host: "localhost".to_string(),
                             port: "1883".to_string(),
@@ -81,13 +88,14 @@ impl eframe::App for MainWrapper {
         match &mut self.state {
             AppState::Setup { host, port } => {
                 let tx = self.event_tx.clone();
-                render_setup(ctx, host, port, move |rx| {
-                    let _ = tx.send(AppEvent::StartStreaming(rx));
+                render_setup(ctx, host, port, move |rx, client| {
+                    let _ = tx.send(AppEvent::StartStreaming(rx, client));
                 });
             }
             AppState::SetConfig(config_window) => {
                 let tx = self.event_tx.clone();
-                config_window.render(ctx, move || {
+                let mqtt_client = self.mqtt_client.clone();
+                config_window.render(ctx, mqtt_client, move || {
                     let _ = tx.send(AppEvent::BackToMain);
                 });
             }

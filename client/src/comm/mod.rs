@@ -7,15 +7,31 @@ use rumqttc::{AsyncClient, Event, MqttOptions, Packet, QoS};
 
 use crate::{comm::dto::EspDevice, esp::EspStatusMessage};
 
-pub async fn run_mqtt_client(tx: Sender<Vec<EspDevice>>, host: String, port: u16) {
+pub async fn run_mqtt_client(
+    tx: Sender<Vec<EspDevice>>,
+    host: String,
+    port: u16,
+) -> AsyncClient {
     let mut mqttoptions = MqttOptions::new("showtime_desktop", host, port);
     mqttoptions.set_keep_alive(Duration::from_secs(5));
 
-    let (client, mut eventloop) = AsyncClient::new(mqttoptions, 10);
+    let (client, eventloop) = AsyncClient::new(mqttoptions, 10);
     client
         .subscribe("showtime/status", QoS::AtMostOnce)
         .await
         .unwrap();
+
+    let client_clone = client.clone();
+
+    // Spawn den Event-Loop in einem separaten Task
+    tokio::spawn(async move {
+        run_mqtt_event_loop(tx, eventloop).await;
+    });
+
+    client_clone
+}
+
+async fn run_mqtt_event_loop(tx: Sender<Vec<EspDevice>>, mut eventloop: rumqttc::EventLoop) {
 
     let mut device_map: HashMap<String, EspDevice> = HashMap::new();
 
