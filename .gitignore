@@ -1,2 +1,3 @@
 /client/target
 /test_client/__pycache__
+/server-worker/target
