@@ -41,10 +41,7 @@ pub async fn run_config_loop() {
 }
 
 fn compare_configs(a: &UpdateConfig, b: &UpdateConfig) -> bool {
-    return a.device_name == b.device_name
-        && a.dmx_universe == b.dmx_universe
-        && a.dmx_lower_addr == b.dmx_lower_addr
-        && a.dmx_upper_addr == b.dmx_upper_addr;
+    return a.device_name == b.device_name && a.dmx_config == b.dmx_config;
 }
 
 async fn parse_msg(eventloop: &mut EventLoop) -> Option<UpdateConfig> {

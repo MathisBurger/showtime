@@ -22,7 +22,7 @@ impl ConfigStorage {
 
     pub fn set_device_config(&mut self, config: UpdateConfig) {
         self.dev_mapping.insert(config.mac_addr.clone(), config);
-        self.save_to_file();
+        let _ = self.save_to_file();
     }
 
     fn save_to_file(&self) -> Result<(), Box<dyn std::error::Error>> {

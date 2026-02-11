@@ -6,6 +6,10 @@ fn main() -> Result<()> {
         "UpdateConfig",
         "#[derive(serde::Serialize, serde::Deserialize)]",
     );
+    config.type_attribute(
+        "DmxConfig",
+        "#[derive(serde::Serialize, serde::Deserialize)]",
+    );
     config.compile_protos(&["../messages.proto"], &["../", "."])?;
     Ok(())
 }
