@@ -14,3 +14,11 @@ message EspStatusMessage {
   uint32 dmx_lower_addr = 9;
   uint32 dmx_upper_addr = 10;
 }
+
+message UpdateConfig {
+  string mac_addr = 1;
+  string device_name = 2;
+  uint32 dmx_universe = 8;
+  uint32 dmx_lower_addr = 9;
+  uint32 dmx_upper_addr = 10;
+}

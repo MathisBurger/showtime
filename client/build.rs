@@ -1,9 +1,7 @@
 use std::io::Result;
 
 fn main() -> Result<()> {
-    prost_build::compile_protos(
-            &["../messages.proto"],
-            &["../", "."]
-        )?;
+    let mut config = prost_build::Config::new();
+    config.compile_protos(&["../messages.proto"], &["../", "."])?;
     Ok(())
 }

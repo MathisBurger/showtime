@@ -1,11 +1,12 @@
-use std::fmt::Formatter;
-
 use eframe::egui;
 
 use crate::comm::dto::{DeviceStatus, EspDevice};
 
 impl EspDevice {
-    pub fn draw_device_card(&self, ui: &mut egui::Ui) {
+    pub fn draw_device_card<F>(&self, ui: &mut egui::Ui, mut edit: F)
+    where
+        F: FnMut(EspDevice),
+    {
         egui::Frame::group(ui.style())
             .fill(egui::Color32::from_gray(35))
             .corner_radius(10.0)
@@ -20,6 +21,9 @@ impl EspDevice {
                         };
 
                         ui.heading(&self.device_name);
+                        if ui.button("📝").clicked() {
+                            edit(self.clone());
+                        }
                         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                             ui.label(
                                 egui::RichText::new(status_text)

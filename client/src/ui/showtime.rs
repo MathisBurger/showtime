@@ -1,20 +1,24 @@
 use crate::comm::dto::EspDevice;
+use crate::ui::AppEvent;
 use eframe::Frame;
 use eframe::egui;
 use eframe::egui::Context;
 use std::sync::mpsc::Receiver;
+use std::sync::mpsc::Sender;
 use std::time::Duration;
 
 pub struct ShowtimeApp {
-    rx: Receiver<Vec<EspDevice>>,
+    pub rx: Receiver<Vec<EspDevice>>,
     devices: Vec<EspDevice>,
+    event_tx: Sender<AppEvent>,
 }
 
 impl ShowtimeApp {
-    pub fn new(rx: Receiver<Vec<EspDevice>>) -> Self {
+    pub fn new(rx: Receiver<Vec<EspDevice>>, event_tx: Sender<AppEvent>) -> Self {
         Self {
             rx,
             devices: Vec::new(),
+            event_tx,
         }
     }
 }
@@ -47,7 +51,11 @@ impl eframe::App for ShowtimeApp {
                                 ui.vertical(|ui| {
                                     ui.set_width(card_width);
                                     ui.push_id(&device.mac_addr, |ui| {
-                                        device.draw_device_card(ui);
+                                        device.draw_device_card(ui, |_d| {
+                                            let _ = self
+                                                .event_tx
+                                                .send(AppEvent::EditDevice(device.clone()));
+                                        });
                                     });
                                 });
                                 if (i + 1) % num_columns == 0 {
