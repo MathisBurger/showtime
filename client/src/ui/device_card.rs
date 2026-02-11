@@ -38,7 +38,7 @@ impl EspDevice {
                     ui.horizontal(|ui| {
                         ui.monospace(&self.mac_addr);
                         ui.separator();
-                        ui.label(format!("Jitter (sACN): {}ms", self.last_sacn_pkt));
+                        ui.label(format!("Last update: {}ms", self.last_sacn_pkt));
 
                         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                             let (r, g, b) = self.color;

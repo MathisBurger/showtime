@@ -12,7 +12,7 @@ mod ui;
 async fn main() -> eframe::Result<()> {
     let native_options = eframe::NativeOptions::default();
     eframe::run_native(
-        "Showtime Desktop by Mathis Burger",
+        "Showtime Monitoring by Mathis Burger",
         native_options,
         Box::new(|_cc| Ok(Box::new(MainWrapper::new()))),
     )

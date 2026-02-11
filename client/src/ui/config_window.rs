@@ -18,7 +18,7 @@ pub struct DmxConfigEdit {
 impl DmxConfigEdit {
     pub fn new() -> Self {
         Self {
-            universe: "0".to_string(),
+            universe: "1".to_string(),
             start_addr: "1".to_string(),
             led_count: "50".to_string(),
             esp_pin: "2".to_string(),
@@ -72,17 +72,21 @@ impl ConfigWindow {
         }
     }
 
-    pub fn render<F>(&mut self, ctx: &egui::Context, mqtt_client: Option<AsyncClient>, mut go_back: F)
-    where
+    pub fn render<F>(
+        &mut self,
+        ctx: &egui::Context,
+        mqtt_client: Option<AsyncClient>,
+        mut go_back: F,
+    ) where
         F: FnMut(),
     {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.vertical_centered(|ui| {
-                ui.heading("🎛️ Device Configuration");
+                ui.heading("Device Configuration");
                 ui.add_space(10.0);
 
                 ui.horizontal(|ui| {
-                    ui.label("📱 MAC Address:");
+                    ui.label("MAC Address:");
                     ui.label(&self.device.mac_addr);
                 });
 
@@ -96,7 +100,6 @@ impl ConfigWindow {
 
                     ui.add_space(15.0);
 
-                    // DMX Konfigurationen
                     ui.heading("DMX Outputs");
                     ui.add_space(10.0);
 
@@ -107,11 +110,15 @@ impl ConfigWindow {
                         ui.group(|ui| {
                             ui.horizontal(|ui| {
                                 ui.heading(format!("Output #{}", idx + 1));
-                                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                                    if ui.button("🗑️ Remove").clicked() && num_configs > 1 {
-                                        to_remove = Some(idx);
-                                    }
-                                });
+                                ui.with_layout(
+                                    egui::Layout::right_to_left(egui::Align::Center),
+                                    |ui| {
+                                        if ui.button("🗑️ Remove").clicked() && num_configs > 1
+                                        {
+                                            to_remove = Some(idx);
+                                        }
+                                    },
+                                );
                             });
 
                             ui.add_space(5.0);
@@ -158,7 +165,6 @@ impl ConfigWindow {
                     ui.horizontal(|ui| {
                         if ui.button("💾 Update Configuration").clicked() {
                             if let Some(client) = mqtt_client {
-                                // Konvertiere alle DmxConfigEdit zu DmxConfig
                                 let dmx_configs: Vec<DmxConfig> = self
                                     .dmx_configs
                                     .iter()
@@ -176,11 +182,16 @@ impl ConfigWindow {
 
                                 tokio::spawn(async move {
                                     match client
-                                        .publish("showtime/config", QoS::AtLeastOnce, false, payload)
+                                        .publish(
+                                            "showtime/config",
+                                            QoS::AtLeastOnce,
+                                            false,
+                                            payload,
+                                        )
                                         .await
                                     {
-                                        Ok(_) => println!("✅ Config sent successfully"),
-                                        Err(e) => eprintln!("❌ Failed to publish config: {}", e),
+                                        Ok(_) => println!("Config sent successfully"),
+                                        Err(e) => eprintln!("Failed to publish config: {}", e),
                                     }
                                 });
                             }

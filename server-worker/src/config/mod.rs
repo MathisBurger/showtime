@@ -46,9 +46,7 @@ fn compare_configs(a: &UpdateConfig, b: &UpdateConfig) -> bool {
 
 async fn parse_msg(eventloop: &mut EventLoop) -> Option<UpdateConfig> {
     if let Ok(notification) = eventloop.poll().await {
-        log::debug!("new msg");
         if let Event::Incoming(Packet::Publish(p)) = notification {
-            log::debug!("Message extracted");
             if let Ok(msg) = UpdateConfig::decode(&*p.payload) {
                 return Some(msg);
             }

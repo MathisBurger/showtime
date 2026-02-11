@@ -7,7 +7,7 @@ edition = "2024"
 rumqttc = "0.25"
 prost = "0.12"
 dotenvy = "0.15"
-tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time"] }
 serde = { version = "1.0", features = ["derive"] }
 toml = "0.8"
 log = "0.4"
