@@ -1,3 +1,4 @@
 /client/target
 /test_client/__pycache__
 /server-worker/target
+/server-worker/device_config.toml

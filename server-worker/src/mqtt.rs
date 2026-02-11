@@ -9,5 +9,7 @@ pub fn init_mqtt_conn(name: &str) -> (AsyncClient, EventLoop) {
     let mut mqttoptions = MqttOptions::new(name, host, port);
     mqttoptions.set_keep_alive(Duration::from_secs(5));
 
+    log::info!("Initializing new MQTT session with name: {}", name);
+
     AsyncClient::new(mqttoptions, 10)
 }

@@ -57,15 +57,19 @@ impl ConfigWindow {
                                 dmx_universe: self.dmx_universe.parse::<u32>().unwrap(),
                                 dmx_lower_addr: self.dmx_lower_addr.parse::<u32>().unwrap(),
                                 dmx_upper_addr: self.dmx_upper_addr.parse::<u32>().unwrap(),
+                                is_ack: false,
                             };
                             let payload = config_msg.encode_to_vec();
 
-                            let _ = _client.publish(
-                                "showtime/set_config",
-                                QoS::AtMostOnce,
-                                true,
-                                payload,
-                            );
+                            tokio::spawn(async move {
+                                match _client
+                                    .publish("showtime/config", QoS::AtLeastOnce, true, payload)
+                                    .await
+                                {
+                                    Ok(_) => println!("Config sent successfully"),
+                                    Err(e) => println!("Failed to publish config: {e}"),
+                                }
+                            });
                         }
                         go_back();
                     }

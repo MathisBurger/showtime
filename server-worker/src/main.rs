@@ -10,6 +10,7 @@ mod mqtt;
 #[tokio::main]
 async fn main() {
     dotenvy::dotenv().ok();
+    pretty_env_logger::init();
 
     run_config_loop().await;
 }
