@@ -1,0 +1,14 @@
+# Protocol Buffers Options for Nanopb
+# This ensures that strings and bytes have a fixed maximum size, 
+# making the Arduino code much easier to write (no custom callbacks needed).
+
+esp_status.UpdateConfig.mac_addr     max_size:32
+esp_status.UpdateConfig.device_name  max_size:64
+esp_status.UpdateConfig.dmx_config   max_count:8
+
+esp_status.SetDmx.OutputData.dmx_values  max_size:512
+esp_status.SetDmx.outputs                max_count:8
+
+esp_status.DmxConfig.universe       int_size:IS_8
+esp_status.DmxConfig.start_addr     int_size:IS_16
+esp_status.DmxConfig.led_count      int_size:IS_16
