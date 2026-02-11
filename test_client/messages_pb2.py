@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0emessages.proto\x12\nesp_status\"c\n\tDmxConfig\x12\x10\n\x08universe\x18\x01 \x01(\r\x12\x12\n\nstart_addr\x18\x02 \x01(\r\x12\x11\n\tled_count\x18\x03 \x01(\r\x12\x0f\n\x07\x65sp_pin\x18\x04 \x01(\r\x12\x0c\n\x04mode\x18\x05 \x01(\r\"\xb5\x01\n\x10\x45spStatusMessage\x12\t\n\x01r\x18\x01 \x01(\r\x12\t\n\x01g\x18\x02 \x01(\r\x12\t\n\x01\x62\x18\x03 \x01(\r\x12\x15\n\rlast_sacn_pkt\x18\x04 \x01(\r\x12\x13\n\x0b\x64\x65vice_name\x18\x05 \x01(\t\x12\x17\n\x0fsignal_strength\x18\x06 \x01(\r\x12\x10\n\x08mac_addr\x18\x07 \x01(\t\x12)\n\ndmx_config\x18\x08 \x03(\x0b\x32\x15.esp_status.DmxConfig\"p\n\x0cUpdateConfig\x12\x10\n\x08mac_addr\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65vice_name\x18\x02 \x01(\t\x12)\n\ndmx_config\x18\x03 \x03(\x0b\x32\x15.esp_status.DmxConfig\x12\x0e\n\x06is_ack\x18\x04 \x01(\x08\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0emessages.proto\x12\nesp_status\"c\n\tDmxConfig\x12\x10\n\x08universe\x18\x01 \x01(\r\x12\x12\n\nstart_addr\x18\x02 \x01(\r\x12\x11\n\tled_count\x18\x03 \x01(\r\x12\x0f\n\x07\x65sp_pin\x18\x04 \x01(\r\x12\x0c\n\x04mode\x18\x05 \x01(\r\"\xb5\x01\n\x10\x45spStatusMessage\x12\t\n\x01r\x18\x01 \x01(\r\x12\t\n\x01g\x18\x02 \x01(\r\x12\t\n\x01\x62\x18\x03 \x01(\r\x12\x15\n\rlast_sacn_pkt\x18\x04 \x01(\r\x12\x13\n\x0b\x64\x65vice_name\x18\x05 \x01(\t\x12\x17\n\x0fsignal_strength\x18\x06 \x01(\r\x12\x10\n\x08mac_addr\x18\x07 \x01(\t\x12)\n\ndmx_config\x18\x08 \x03(\x0b\x32\x15.esp_status.DmxConfig\"p\n\x0cUpdateConfig\x12\x10\n\x08mac_addr\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65vice_name\x18\x02 \x01(\t\x12)\n\ndmx_config\x18\x03 \x03(\x0b\x32\x15.esp_status.DmxConfig\x12\x0e\n\x06is_ack\x18\x04 \x01(\x08\"k\n\x06SetDmx\x12.\n\x07outputs\x18\x01 \x03(\x0b\x32\x1d.esp_status.SetDmx.OutputData\x1a\x31\n\nOutputData\x12\x0f\n\x07\x65sp_pin\x18\x01 \x01(\r\x12\x12\n\ndmx_values\x18\x02 \x01(\x0c\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -27,4 +27,8 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_ESPSTATUSMESSAGE']._serialized_end=313
   _globals['_UPDATECONFIG']._serialized_start=315
   _globals['_UPDATECONFIG']._serialized_end=427
+  _globals['_SETDMX']._serialized_start=429
+  _globals['_SETDMX']._serialized_end=536
+  _globals['_SETDMX_OUTPUTDATA']._serialized_start=487
+  _globals['_SETDMX_OUTPUTDATA']._serialized_end=536
 # @@protoc_insertion_point(module_scope)

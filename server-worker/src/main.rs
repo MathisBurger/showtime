@@ -15,7 +15,7 @@ async fn main() {
 
     // Start sACN/DMX Receiver in a separate thread
     tokio::spawn(async move {
-        dmx::run_dmx_loop();
+        dmx::run_dmx_loop().await;
     });
 
     run_config_loop().await;

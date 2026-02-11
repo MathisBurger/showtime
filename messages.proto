@@ -27,3 +27,11 @@ message UpdateConfig {
   repeated DmxConfig dmx_config = 3;
   bool is_ack = 4;
 }
+
+message SetDmx {
+  message OutputData {
+    uint32 esp_pin = 1;
+    bytes dmx_values = 2;
+  }
+  repeated OutputData outputs = 1;
+}

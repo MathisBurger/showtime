@@ -2,7 +2,7 @@ use crate::{config::storage::ConfigStorage, esp::UpdateConfig, mqtt::init_mqtt_c
 use prost::Message;
 use rumqttc::{Event, EventLoop, Packet, QoS};
 
-mod storage;
+pub mod storage;
 
 pub async fn run_config_loop() {
     let (client, mut eventloop) = init_mqtt_conn("config-worker");
