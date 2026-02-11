@@ -4,7 +4,7 @@ use eframe::egui;
 
 use crate::{
     comm::dto::EspDevice,
-    ui::{config_window::render_set_config, setup::render_setup, showtime::ShowtimeApp},
+    ui::{config_window::ConfigWindow, setup::render_setup, showtime::ShowtimeApp},
 };
 
 mod config_window;
@@ -20,7 +20,7 @@ pub enum AppEvent {
 
 pub enum AppState {
     Setup { host: String, port: String },
-    SetConfig(EspDevice),
+    SetConfig(ConfigWindow),
     Running(ShowtimeApp),
 }
 
@@ -54,12 +54,16 @@ impl eframe::App for MainWrapper {
                     self.state = AppState::Running(ShowtimeApp::new(rx, self.event_tx.clone()));
                 }
                 AppEvent::EditDevice(dev) => {
-                    if let AppState::Running(app) =
-                        std::mem::replace(&mut self.state, AppState::SetConfig(dev.clone()))
-                    {
+                    // Extrahiere den Receiver aus dem Running-State
+                    let config_window = ConfigWindow::new(dev.clone());
+                    if let AppState::Running(app) = std::mem::replace(
+                        &mut self.state,
+                        AppState::SetConfig(config_window),
+                    ) {
                         self.mqtt = Some(app.rx);
+                    } else {
+                        self.state = AppState::SetConfig(ConfigWindow::new(dev));
                     }
-                    self.state = AppState::SetConfig(dev);
                 }
                 AppEvent::BackToMain => {
                     if let Some(rx) = self.mqtt.take() {
@@ -81,10 +85,9 @@ impl eframe::App for MainWrapper {
                     let _ = tx.send(AppEvent::StartStreaming(rx));
                 });
             }
-            AppState::SetConfig(device) => {
+            AppState::SetConfig(config_window) => {
                 let tx = self.event_tx.clone();
-                let device_clone = device.clone();
-                render_set_config(ctx, device_clone, move || {
+                config_window.render(ctx, move || {
                     let _ = tx.send(AppEvent::BackToMain);
                 });
             }
