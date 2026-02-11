@@ -7,11 +7,7 @@ use rumqttc::{AsyncClient, Event, MqttOptions, Packet, QoS};
 
 use crate::{comm::dto::EspDevice, esp::EspStatusMessage};
 
-pub async fn run_mqtt_client(
-    tx: Sender<Vec<EspDevice>>,
-    host: String,
-    port: u16,
-) -> AsyncClient {
+pub async fn run_mqtt_client(tx: Sender<Vec<EspDevice>>, host: String, port: u16) -> AsyncClient {
     let mut mqttoptions = MqttOptions::new("showtime_desktop", host, port);
     mqttoptions.set_keep_alive(Duration::from_secs(5));
 
@@ -23,7 +19,6 @@ pub async fn run_mqtt_client(
 
     let client_clone = client.clone();
 
-    // Spawn den Event-Loop in einem separaten Task
     tokio::spawn(async move {
         run_mqtt_event_loop(tx, eventloop).await;
     });
@@ -32,7 +27,6 @@ pub async fn run_mqtt_client(
 }
 
 async fn run_mqtt_event_loop(tx: Sender<Vec<EspDevice>>, mut eventloop: rumqttc::EventLoop) {
-
     let mut device_map: HashMap<String, EspDevice> = HashMap::new();
 
     let mut ui_refresh_ticker = tokio::time::interval(Duration::from_millis(100));
@@ -53,8 +47,7 @@ async fn run_mqtt_event_loop(tx: Sender<Vec<EspDevice>>, mut eventloop: rumqttc:
                     device.update_status();
                 }
                 let values: Vec<EspDevice> = device_map.values().cloned().collect();
-                if let Err(e) = tx.send(values) {
-                    eprintln!("UI Thread wurde geschlossen, beende MQTT-Loop. {}", e);
+                if let Err(_e) = tx.send(values) {
                     break;
                 }
             }

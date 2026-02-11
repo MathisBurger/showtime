@@ -54,28 +54,23 @@ impl eframe::App for MainWrapper {
         while let Ok(event) = self.event_rx.try_recv() {
             match event {
                 AppEvent::StartStreaming(rx, client) => {
-                    // The receiver is passed directly to ShowtimeApp and not stored in MainWrapper.
                     self.mqtt_client = Some(client);
                     self.state = AppState::Running(ShowtimeApp::new(rx, self.event_tx.clone()));
                 }
                 AppEvent::EditDevice(dev) => {
-                    // Extrahiere den Receiver aus dem Running-State
                     let config_window = ConfigWindow::new(dev.clone());
-                    if let AppState::Running(app) = std::mem::replace(
-                        &mut self.state,
-                        AppState::SetConfig(config_window),
-                    ) {
+                    if let AppState::Running(app) =
+                        std::mem::replace(&mut self.state, AppState::SetConfig(config_window))
+                    {
                         self.device_rx = Some(app.rx);
                     } else {
                         self.state = AppState::SetConfig(ConfigWindow::new(dev));
                     }
                 }
                 AppEvent::BackToMain => {
-                    // Zurück zum Running-State, falls MQTT-Verbindung existiert
                     if let Some(rx) = self.device_rx.take() {
                         self.state = AppState::Running(ShowtimeApp::new(rx, self.event_tx.clone()));
                     } else {
-                        // Fallback zum Setup, falls keine MQTT-Verbindung
                         self.state = AppState::Setup {
                             host: "localhost".to_string(),
                             port: "1883".to_string(),

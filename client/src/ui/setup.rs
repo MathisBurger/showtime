@@ -36,7 +36,6 @@ where
                         let _ = client_tx.send(client);
                     });
 
-                    // Warte auf den Client (blockierend, aber nur kurz)
                     if let Ok(client) = client_rx.recv() {
                         finish(rx, client);
                     }
