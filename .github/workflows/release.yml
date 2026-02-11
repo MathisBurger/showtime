@@ -19,10 +19,10 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v4
       - name: Build
-        run: cargo build --release
+        run: cd client && cargo build --release
       - name: Upload Artifacts
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            target/release/showtime.exe
-            target/release/showtime
+            client/target/release/showtime.exe
+            client/target/release/showtime
