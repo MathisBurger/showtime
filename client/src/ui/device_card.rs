@@ -58,13 +58,16 @@ impl EspDevice {
                     ui.horizontal(|ui| {
                         ui.label(format!("Signal: {}%", self.signal_strength));
                         ui.separator();
-                        ui.label(format!(
-                            "DMX addr: {}.{} - {}.{}",
-                            self.dmx_universe,
-                            self.dmx_lower_addr,
-                            self.dmx_universe,
-                            self.dmx_upper_addr
-                        ));
+                        if let Some(cfg) = self.dmx_configs.first() {
+                            ui.label(format!(
+                                "DMX: U{} Addr: {} ({} more)",
+                                cfg.universe,
+                                cfg.start_addr,
+                                self.dmx_configs.len().saturating_sub(1)
+                            ));
+                        } else {
+                            ui.label("DMX: No outputs");
+                        }
                     });
 
                     ui.add_space(12.0);

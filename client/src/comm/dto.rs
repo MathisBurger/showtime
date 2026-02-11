@@ -18,28 +18,12 @@ pub struct EspDevice {
     pub status: DeviceStatus,
     pub mac_addr: String,
     pub signal_strength: u32,
-    pub dmx_universe: u32,
-    pub dmx_lower_addr: u32,
-    pub dmx_upper_addr: u32,
     pub dmx_configs: Vec<crate::esp::DmxConfig>,
     pub history: VecDeque<EspStatusMessage>,
 }
 
 impl EspDevice {
     pub fn new(msg: &EspStatusMessage) -> Self {
-        // Extrahiere Werte aus dem ersten DmxConfig (falls vorhanden) für Legacy-Zwecke
-        let (dmx_universe, dmx_lower_addr, dmx_upper_addr) = msg
-            .dmx_config
-            .first()
-            .map(|cfg| {
-                (
-                    cfg.universe,
-                    cfg.start_addr,
-                    cfg.start_addr + (cfg.led_count * 3).saturating_sub(1),
-                )
-            })
-            .unwrap_or((0, 0, 0));
-
         EspDevice {
             device_name: msg.device_name.clone(),
             color: (msg.r, msg.g, msg.b),
@@ -48,9 +32,6 @@ impl EspDevice {
             status: DeviceStatus::Online,
             signal_strength: msg.signal_strength,
             mac_addr: msg.mac_addr.clone(),
-            dmx_universe,
-            dmx_lower_addr,
-            dmx_upper_addr,
             dmx_configs: msg.dmx_config.clone(),
             history: VecDeque::new(),
         }
@@ -62,14 +43,6 @@ impl EspDevice {
         self.last_sacn_pkt = msg.last_sacn_pkt;
         self.last_status_update = get_current_unix();
         self.signal_strength = msg.signal_strength;
-
-        // Extrahiere Werte aus dem ersten DmxConfig (falls vorhanden)
-        if let Some(cfg) = msg.dmx_config.first() {
-            self.dmx_universe = cfg.universe;
-            self.dmx_lower_addr = cfg.start_addr;
-            self.dmx_upper_addr = cfg.start_addr + (cfg.led_count * 3).saturating_sub(1);
-        }
-
         self.dmx_configs = msg.dmx_config.clone();
 
         self.history.push_back(msg.clone());
