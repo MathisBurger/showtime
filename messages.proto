@@ -2,6 +2,14 @@ syntax = "proto3";
 
 package esp_status;
 
+message DmxConfig {
+  uint32 universe = 1;
+  uint32 start_addr = 2;
+  uint32 led_count = 3;
+  uint32 esp_pin = 4;
+  uint32 mode = 5;
+}
+
 message EspStatusMessage {
   uint32 r = 1;
   uint32 g = 2;
@@ -10,16 +18,12 @@ message EspStatusMessage {
   string device_name = 5;
   uint32 signal_strength = 6;
   string mac_addr = 7;
-  uint32 dmx_universe = 8;
-  uint32 dmx_lower_addr = 9;
-  uint32 dmx_upper_addr = 10;
+  repeated DmxConfig dmx_config = 8;
 }
 
 message UpdateConfig {
   string mac_addr = 1;
   string device_name = 2;
-  uint32 dmx_universe = 3;
-  uint32 dmx_lower_addr = 4;
-  uint32 dmx_upper_addr = 5;
-  bool is_ack = 6;
+  repeated DmxConfig dmx_config = 3;
+  bool is_ack = 4;
 }
