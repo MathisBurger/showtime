@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0emessages.proto\x12\nesp_status\"\x89\x01\n\x10\x45spStatusMessage\x12\t\n\x01r\x18\x01 \x01(\r\x12\t\n\x01g\x18\x02 \x01(\r\x12\t\n\x01\x62\x18\x03 \x01(\r\x12\x15\n\rlast_sacn_pkt\x18\x04 \x01(\r\x12\x13\n\x0b\x64\x65vice_name\x18\x05 \x01(\t\x12\x17\n\x0fsignal_strength\x18\x06 \x01(\r\x12\x0f\n\x07ip_addr\x18\x07 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0emessages.proto\x12\nesp_status\"\xd0\x01\n\x10\x45spStatusMessage\x12\t\n\x01r\x18\x01 \x01(\r\x12\t\n\x01g\x18\x02 \x01(\r\x12\t\n\x01\x62\x18\x03 \x01(\r\x12\x15\n\rlast_sacn_pkt\x18\x04 \x01(\r\x12\x13\n\x0b\x64\x65vice_name\x18\x05 \x01(\t\x12\x17\n\x0fsignal_strength\x18\x06 \x01(\r\x12\x10\n\x08mac_addr\x18\x07 \x01(\t\x12\x14\n\x0c\x64mx_universe\x18\x08 \x01(\r\x12\x16\n\x0e\x64mx_lower_addr\x18\t \x01(\r\x12\x16\n\x0e\x64mx_upper_addr\x18\n \x01(\rb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -22,5 +22,5 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'messages_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_ESPSTATUSMESSAGE']._serialized_start=31
-  _globals['_ESPSTATUSMESSAGE']._serialized_end=168
+  _globals['_ESPSTATUSMESSAGE']._serialized_end=239
 # @@protoc_insertion_point(module_scope)

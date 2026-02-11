@@ -51,6 +51,6 @@ fn get_or_create_device<'a>(
     devices: &'a mut HashMap<String, EspDevice>,
 ) -> &'a mut EspDevice {
     devices
-        .entry(msg.ip_addr.clone())
+        .entry(msg.mac_addr.clone())
         .or_insert_with(|| EspDevice::new(msg))
 }

@@ -10,7 +10,7 @@ TOPIC = "showtime/status"
 
 NUM_DEVICES = 25
 DEVICE_NAMES = [f"Spot_{i + 1:02d}" for i in range(NUM_DEVICES)]
-IP_PREFIX = "192.168.1."
+MAC_PREFIX = "001B63844"
 
 
 def simulate_device(name, ip):
@@ -27,7 +27,10 @@ def simulate_device(name, ip):
         )
         msg.last_sacn_pkt = random.randint(1000, 9999)
         msg.device_name = name
-        msg.ip_addr = ip
+        msg.mac_addr = ip
+        msg.dmx_universe = 1
+        msg.dmx_lower_addr = 1
+        msg.dmx_upper_addr = 255
         msg.signal_strength = random.randint(
             80, 100
         )  # Höhere Signalstärke für stabilere Demo
@@ -59,7 +62,7 @@ threads = []
 try:
     for i in range(NUM_DEVICES):
         device_name = DEVICE_NAMES[i]
-        device_ip = f"{IP_PREFIX}{100 + i}"
+        device_ip = f"{MAC_PREFIX}{100 + i}"
         t = threading.Thread(
             target=simulate_device, args=(device_name, device_ip), daemon=True
         )

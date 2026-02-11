@@ -1,3 +1,5 @@
+use std::fmt::Formatter;
+
 use eframe::egui;
 
 use crate::comm::dto::{DeviceStatus, EspDevice};
@@ -6,7 +8,7 @@ impl EspDevice {
     pub fn draw_device_card(&self, ui: &mut egui::Ui) {
         egui::Frame::group(ui.style())
             .fill(egui::Color32::from_gray(35))
-            .rounding(10.0)
+            .corner_radius(10.0)
             .stroke(egui::Stroke::new(1.0, egui::Color32::from_gray(60)))
             .show(ui, |ui| {
                 ui.vertical(|ui| {
@@ -30,7 +32,7 @@ impl EspDevice {
                     ui.separator();
 
                     ui.horizontal(|ui| {
-                        ui.monospace(&self.ip_addr);
+                        ui.monospace(&self.mac_addr);
                         ui.separator();
                         ui.label(format!("Jitter (sACN): {}ms", self.last_sacn_pkt));
 
@@ -49,9 +51,19 @@ impl EspDevice {
                         });
                     });
 
-                    ui.add_space(8.0);
+                    ui.horizontal(|ui| {
+                        ui.label(format!("Signal: {}%", self.signal_strength));
+                        ui.separator();
+                        ui.label(format!(
+                            "DMX addr: {}.{} - {}.{}",
+                            self.dmx_universe,
+                            self.dmx_lower_addr,
+                            self.dmx_universe,
+                            self.dmx_upper_addr
+                        ));
+                    });
 
-                    ui.add_space(4.0);
+                    ui.add_space(12.0);
 
                     if !self.history.is_empty() {
                         ui.collapsing("History Log", |ui| {

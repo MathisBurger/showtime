@@ -23,7 +23,7 @@ impl eframe::App for ShowtimeApp {
     fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
         while let Ok(new_devices) = self.rx.try_recv() {
             self.devices = new_devices;
-            self.devices.sort_by_key(|dev| dev.ip_addr.clone());
+            self.devices.sort_by_key(|dev| dev.mac_addr.clone());
         }
 
         eframe::egui::CentralPanel::default().show(ctx, |ui| {
@@ -46,7 +46,7 @@ impl eframe::App for ShowtimeApp {
                             for (i, device) in self.devices.iter().enumerate() {
                                 ui.vertical(|ui| {
                                     ui.set_width(card_width);
-                                    ui.push_id(&device.ip_addr, |ui| {
+                                    ui.push_id(&device.mac_addr, |ui| {
                                         device.draw_device_card(ui);
                                     });
                                 });

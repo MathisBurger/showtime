@@ -9,5 +9,8 @@ message EspStatusMessage {
   uint32 last_sacn_pkt = 4;
   string device_name = 5;
   uint32 signal_strength = 6;
-  string ip_addr = 7;
+  string mac_addr = 7;
+  uint32 dmx_universe = 8;
+  uint32 dmx_lower_addr = 9;
+  uint32 dmx_upper_addr = 10;
 }

@@ -16,7 +16,11 @@ pub struct EspDevice {
     pub last_sacn_pkt: u32,
     pub last_status_update: u128,
     pub status: DeviceStatus,
-    pub ip_addr: String,
+    pub mac_addr: String,
+    pub signal_strength: u32,
+    pub dmx_universe: u32,
+    pub dmx_lower_addr: u32,
+    pub dmx_upper_addr: u32,
     pub history: VecDeque<EspStatusMessage>,
 }
 
@@ -28,7 +32,11 @@ impl EspDevice {
             last_sacn_pkt: msg.last_sacn_pkt,
             last_status_update: get_current_unix(),
             status: DeviceStatus::Online,
-            ip_addr: msg.ip_addr.clone(),
+            signal_strength: msg.signal_strength,
+            mac_addr: msg.mac_addr.clone(),
+            dmx_universe: msg.dmx_universe,
+            dmx_lower_addr: msg.dmx_lower_addr,
+            dmx_upper_addr: msg.dmx_upper_addr,
             history: VecDeque::new(),
         }
     }
@@ -38,6 +46,10 @@ impl EspDevice {
         self.color = (msg.r, msg.g, msg.b);
         self.last_sacn_pkt = msg.last_sacn_pkt;
         self.last_status_update = get_current_unix();
+        self.signal_strength = msg.signal_strength;
+        self.dmx_universe = msg.dmx_universe;
+        self.dmx_lower_addr = msg.dmx_lower_addr;
+        self.dmx_upper_addr = msg.dmx_upper_addr;
         self.history.push_back(msg.clone());
         if self.history.len() > 99 {
             self.history.pop_front();
