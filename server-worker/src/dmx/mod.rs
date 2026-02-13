@@ -122,7 +122,7 @@ impl SacnReceiver {
             if let Some(data) = source {
                 if let Some(dmx_values) = extract_dmx_range(cfg, data) {
                     set_dmx_msg.outputs.push(OutputData {
-                        esp_pin: cfg.esp_pin,
+                        dmx_start_addr: cfg.start_addr as u32,
                         dmx_values,
                     });
                 }

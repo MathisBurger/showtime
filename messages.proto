@@ -30,8 +30,8 @@ message UpdateConfig {
 
 message SetDmx {
   message OutputData {
-    uint32 dmx_addr = 1;
-    uint32 dmx_value = 2;
+    uint32 dmx_start_addr = 1;
+    bytes dmx_values = 2;
   }
   repeated OutputData outputs = 1;
 }
