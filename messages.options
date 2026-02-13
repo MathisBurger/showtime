@@ -1,0 +1,13 @@
+*UpdateConfig.mac_addr          max_size:32
+*UpdateConfig.device_name       max_size:64
+*UpdateConfig.dmx_config        max_count:8
+
+*EspStatusMessage.device_name   max_size:64
+*EspStatusMessage.mac_addr      max_size:32
+*EspStatusMessage.dmx_config    max_count:8
+
+*SetDmx.outputs                 max_count:1024
+
+*DmxConfig.universe             int_size:IS_8
+*DmxConfig.start_addr           int_size:IS_16
+*DmxConfig.led_count            int_size:IS_16

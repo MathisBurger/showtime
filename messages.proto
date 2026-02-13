@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package esp_status;
 
+import "nanopb.proto";
+
 message DmxConfig {
   uint32 universe = 1;
   uint32 start_addr = 2;
@@ -30,8 +32,8 @@ message UpdateConfig {
 
 message SetDmx {
   message OutputData {
-    uint32 esp_pin = 1;
-    bytes dmx_values = 2;
+    uint32 dmx_addr = 1;
+    uint32 dmx_value = 2;
   }
   repeated OutputData outputs = 1;
 }
