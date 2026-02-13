@@ -121,6 +121,7 @@ impl SacnReceiver {
 
             if let Some(data) = source {
                 if let Some(dmx_values) = extract_dmx_range(cfg, data) {
+                    log::debug!("Updated DMX values: {:?}", dmx_values);
                     set_dmx_msg.outputs.push(OutputData {
                         dmx_start_addr: cfg.start_addr as u32,
                         dmx_values,
