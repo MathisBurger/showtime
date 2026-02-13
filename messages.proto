@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package esp_status;
 
-import "nanopb.proto";
-
 message DmxConfig {
   uint32 universe = 1;
   uint32 start_addr = 2;
