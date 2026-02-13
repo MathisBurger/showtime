@@ -18,7 +18,7 @@ PB_BIND(esp_status_UpdateConfig, esp_status_UpdateConfig, 2)
 PB_BIND(esp_status_SetDmx, esp_status_SetDmx, 4)
 
 
-PB_BIND(esp_status_SetDmx_OutputData, esp_status_SetDmx_OutputData, AUTO)
+PB_BIND(esp_status_SetDmx_OutputData, esp_status_SetDmx_OutputData, 2)
 
 
 

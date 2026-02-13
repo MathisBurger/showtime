@@ -15,10 +15,7 @@ typedef struct {
 const char* ssid = "YOUR_WIFI_SSID";
 const char* password = "YOUR_WIFI_PASSWORD";
 const char* mqtt_server = "YOUR_MQTT_BROKER_IP";
-
-WiFiClient espClient;
-PubSubClient client(espClient);
-String macAddr;
+const int mqtt_buffer_size = 16384;
 
 // --- Learned configuration --
 char deviceName[64] = "Unknown";
@@ -26,8 +23,13 @@ pb_size_t dmx_config_count = 0;
 esp_status_DmxConfig dmx_config[8];
 
 
-// -- Running vars --
-uint8_t buffer[16384];
+// -- System global vars --
+WiFiClient espClient;
+PubSubClient client(espClient);
+String macAddr;
+
+// -- Business logic vars --
+uint8_t buffer[mqtt_buffer_size];
 uint32_t lastStatusSend = 0;
 uint32_t lastSacnRcv = 0;
 esp_status_SetDmx dmx_data = esp_status_SetDmx_init_default;
@@ -35,7 +37,7 @@ esp_status_SetDmx dmx_data = esp_status_SetDmx_init_default;
 void setup() {
     Serial.begin(115200);
     setup_wifi();
-    client.setBufferSize(16384);
+    client.setBufferSize(mqtt_buffer_size);
     client.setServer(mqtt_server, 1883);
     client.setCallback(callback);
 }
@@ -54,19 +56,40 @@ void loop() {
 }
 
 void resetAllPins() {
-  // TODO: Implement logic to reset all pins.
+  for (int i = 0; i < dmx_config_count; i++) {
+    pinMode(dmx_config[i].esp_pin, OUTPUT);
+    digitalWrite(dmx_config[i].esp_pin, LOW);
+  }
 }
 
 void updateFromDmxValues() {
-  // TODO: Implement logic to update pins from DMX values.
+  for (int i = 0; i < dmx_data.outputs_count; i++) {
+    uint32_t start_addr = dmx_data.outputs[i].dmx_start_addr;
+    
+    // Find matching config
+    for (int j = 0; j < dmx_config_count; j++) {
+      if (dmx_config[j].start_addr == start_addr) {
+        uint32_t pin = dmx_config[j].esp_pin;
+        uint8_t* raw_data = dmx_data.outputs[i].dmx_values.bytes;
+        size_t data_len = dmx_data.outputs[i].dmx_values.size;
+
+        // Implementation for LED control would go here
+        // For now, we just log it
+        // Serial.printf("Pin %d: Received %d bytes\n", pin, data_len);
+      }
+    }
+  }
 }
 
 rgb_values_t getRgbValues() {
-  // TODO: Implement logic to get RGB values from DMX values.
-  rgb_values_t rgb_values;
-  rgb_values.r = 0;
-  rgb_values.g = 0;
-  rgb_values.b = 255;
+  rgb_values_t rgb_values = {0, 0, 0};
+  
+  if (dmx_data.outputs_count > 0 && dmx_data.outputs[0].dmx_values.size >= 3) {
+    rgb_values.r = dmx_data.outputs[0].dmx_values.bytes[0];
+    rgb_values.g = dmx_data.outputs[0].dmx_values.bytes[1];
+    rgb_values.b = dmx_data.outputs[0].dmx_values.bytes[2];
+  }
+  
   return rgb_values;
 }
 

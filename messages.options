@@ -6,7 +6,8 @@
 *EspStatusMessage.mac_addr      max_size:32
 *EspStatusMessage.dmx_config    max_count:8
 
-*SetDmx.outputs                 max_count:1024
+*SetDmx.outputs                 max_count:8
+*OutputData.dmx_values          max_size:512
 
 *DmxConfig.universe             int_size:IS_8
 *DmxConfig.start_addr           int_size:IS_16

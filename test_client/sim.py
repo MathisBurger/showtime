@@ -51,7 +51,7 @@ def simulate_device(idx, name, ip):
                     dmx_cmd.ParseFromString(msg.payload)
                     for output in dmx_cmd.outputs:
                         hex_vals = binascii.hexlify(output.dmx_values).decode()
-                        print(f"[{name}] 💡 DMX Update (Pin {output.esp_pin}): {hex_vals}")
+                        print(f"[{name}] 💡 DMX Update (Addr {output.dmx_start_addr}): {hex_vals}")
                         
                         # Wir simulieren die Farbanpassung basierend auf dem ersten Pixel
                         if len(output.dmx_values) >= 3:
